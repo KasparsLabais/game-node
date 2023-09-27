@@ -30,4 +30,4 @@ const getUserBySocketId = (socketId) => {
     return user;
 }
 
-module.exports = { addOrUpdateUser, removeUser };
+module.exports = { addOrUpdateUser, removeUser, getUserBySocketId, getUser };

@@ -15,6 +15,7 @@ server.listen(3000,'localhost', () => {
 const io = require('./socket').init(server);
 io.on('connection', (socket) => {
   socket.on('userconnected', (data) => {
+    console.log('user connected ', data);
     let userResponse = users.addOrUpdateUser(data.id, data.username, socket.id);
   });
 
@@ -22,11 +23,25 @@ io.on('connection', (socket) => {
     console.log('user disconnected ');
   });
 
-  socket.on('playerJoined', (data) => {
+  socket.on('joinGameInstance', (data, callback) => {
     console.log(data);
+    let user = users.getUserBySocketId(socket.id);
+
+    if (!user) {
+      callback({ status: false, message: 'User not found', repeatCount: data.repeatCount + 1 });
+    } else {
+      games.addPlayerToGameInstance(data.gameToken, user);
+
+      socket.join(data.gameToken);
+      io.to(data.gameToken).emit('playerJoined', {
+        'gameToken': data.gameToken,
+        'player': {'username': user.username, 'id': user.id}
+      });
+    }
   });
 
   socket.on('addOrUpdateGameInstance', (data) => {
+    console.log('addOrUpdateGameInstance', data);
     let user = users.getUserBySocketId(socket.id);
     if (user.id != data.gameInstance.user_id) {
       return;
