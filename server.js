@@ -21,5 +21,18 @@ io.on('connection', (socket) => {
   socket.on('disconnect', (socket) => {
     console.log('user disconnected ');
   });
+
+  socket.on('playerJoined', (data) => {
+    console.log(data);
+  });
+
+  socket.on('addOrUpdateGameInstance', (data) => {
+    let user = users.getUserBySocketId(socket.id);
+    if (user.id != data.gameInstance.user_id) {
+      return;
+    }
+    games.addOrUpdateGame(data.gameToken, data.gameInstance);
+  });
+
 });
 
