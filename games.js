@@ -30,4 +30,8 @@ const addPlayerToGameInstance = (gameToken, player) => {
     return gameInstances;
 }
 
-module.exports = { addOrUpdateGame, addPlayerToGameInstance };
+const getGameInstance = (gameToken) => {
+    return gameInstances[gameToken];
+}
+
+module.exports = { addOrUpdateGame, addPlayerToGameInstance, getGameInstance };

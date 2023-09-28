@@ -31,10 +31,12 @@ io.on('connection', (socket) => {
       callback({ status: false, message: 'User not found', repeatCount: data.repeatCount + 1 });
     } else {
       games.addPlayerToGameInstance(data.gameToken, user);
+      let gameInstance = games.getGameInstance(data.gameToken);
 
       socket.join(data.gameToken);
       io.to(data.gameToken).emit('playerJoined', {
         'gameToken': data.gameToken,
+        'gameInstance': gameInstance.game,
         'player': {'username': user.username, 'id': user.id}
       });
     }
