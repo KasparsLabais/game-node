@@ -24,23 +24,35 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinGameInstance', (data, callback) => {
-    console.log(data);
-    let user = users.getUserBySocketId(socket.id);
+    console.log('joinGameInstance', data);
 
+    let user = users.getUserBySocketId(socket.id);
     if (!user) {
       callback({ status: false, message: 'User not found', repeatCount: data.repeatCount + 1 });
     } else {
       games.addPlayerToGameInstance(data.gameToken, user);
       let gameInstance = games.getGameInstance(data.gameToken);
 
-      socket.join(data.gameToken);
       io.to(data.gameToken).emit('playerJoined', {
         'gameToken': data.gameToken,
         'gameInstance': gameInstance.game,
         'player': {'username': user.username, 'id': user.id}
       });
+      callback({ status: true, message: 'Joined room' });
     }
   });
+
+  socket.on('joinRoom', (data, callback) => {
+    console.log('joinRoom', data);
+
+    let user = users.getUserBySocketId(socket.id);
+    if (!user) {
+      callback({status: false, message: 'User not found', repeatCount: data.repeatCount + 1});
+    } else {
+      socket.join(data.gameToken);
+      callback({status: true, message: 'Joined room'});
+    }
+  })
 
   socket.on('addOrUpdateGameInstance', (data) => {
     console.log('addOrUpdateGameInstance', data);
