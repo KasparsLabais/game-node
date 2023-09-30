@@ -7,7 +7,7 @@ const addOrUpdateGame = (gameToken, game) => {
     if (gameInstance) {
         gameInstance.game = game;
     } else {
-        gameInstances[gameToken] = { game };
+        gameInstances[gameToken]['game'] = game;
     }
     console.log("[GAMES] ",gameInstances);
     return gameInstances;

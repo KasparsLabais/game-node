@@ -63,5 +63,37 @@ io.on('connection', (socket) => {
     games.addOrUpdateGame(data.gameToken, data.gameInstance);
   });
 
+  socket.on('updateGameInstance', (data) => {
+    console.log('updateGameInstanceStatus', data);
+    let user = users.getUserBySocketId(socket.id);
+    if (user.id != data.gameInstance.user_id) {
+      return;
+    }
+
+    games.addOrUpdateGame(data.gameToken, data.gameInstance);
+    io.to(data.gameToken).emit('gameInstanceUpdated', {
+      'gameToken': data.gameToken,
+      'gameInstance': data.gameInstance,
+      'action' : data.action
+    });
+  });
+
+  socket.on('getGameInstance', (data, callback) => {
+    console.log('getGameInstance', data);
+    let gameInstance = games.getGameInstance(data.gameToken);
+    callback({ 'gameToken': data.gameToken, 'gameInstance': gameInstance });
+  });
+
+  socket.on('redirect', (data) => {
+    console.log('redirect', data);
+    let user = users.getUserBySocketId(socket.id);
+    let gameInstance = games.getGameInstance(data.gameToken);
+
+    if (user.id != gameInstance.game.user_id) {
+        return;
+    }
+    io.to(data.gameToken).emit('redirect', { 'gameToken': data.gameToken, 'url': data.url });
+  });
+
 });
 
