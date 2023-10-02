@@ -64,7 +64,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('updateGameInstance', (data) => {
-    console.log('updateGameInstanceStatus', data);
+    console.log('updateGameInstance', data);
     let user = users.getUserBySocketId(socket.id);
     if (user.id != data.gameInstance.user_id) {
       return;
