@@ -95,5 +95,35 @@ io.on('connection', (socket) => {
     io.to(data.gameToken).emit('redirect', { 'gameToken': data.gameToken, 'url': data.url });
   });
 
+  socket.on('updatePlayerInstance', (data) => {
+    console.log('updatePlayerInstance', data);
+    let user = users.getUserBySocketId(socket.id);
+    if (user.id != data.playerInstance.user_id) {
+      return;
+    }
+
+    let gameInstance = games.getGameInstance(data.gameToken);
+    if (!gameInstance) {
+      return;
+    }
+
+    switch (data.action) {
+      case 'updatePlayerInstanceStatus':
+        break;
+      case 'updatePlayerInstanceScore':
+        break;
+      case 'updatePlayerInstanceRemoteData':
+        gameInstance.players[user.id].remoteData = data.playerInstance.remoteData;
+        break;
+    }
+
+    games.addOrUpdateGame(data.gameToken, data.gameInstance);
+    io.to(data.gameToken).emit('playerInstanceUpdated', {
+      'gameToken': data.gameToken,
+      'playerInstance': data.playerInstance,
+      'action' : data.action
+    });
+  });
+
 });
 
