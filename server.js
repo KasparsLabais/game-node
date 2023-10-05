@@ -15,19 +15,22 @@ server.listen(3000,'localhost', () => {
 
 const io = require('./socket').init(server);
 io.on('connection', (socket) => {
+
   socket.on('userconnected', (data) => {
     console.log('user connected ', data);
-    let userResponse = users.addOrUpdateUser(data.id, data.username, socket.id);
+    let userResponse = users.addOrUpdateUser(data.id, data.username, data.playerToken);
+    socket.join(data.playerToken);
   });
 
   socket.on('disconnect', (socket) => {
     console.log('user disconnected ');
+    //socket.leave(data.playerToken);
   });
 
   socket.on('joinGameInstance', (data, callback) => {
     console.log('joinGameInstance', data);
 
-    let user = users.getUserBySocketId(socket.id);
+    let user = users.getUserByPlayerToken(data.playerToken);
     if (!user) {
       callback({ status: false, message: 'User not found', repeatCount: data.repeatCount + 1 });
     } else {
@@ -46,7 +49,7 @@ io.on('connection', (socket) => {
   socket.on('joinRoom', (data, callback) => {
     console.log('joinRoom', data);
 
-    let user = users.getUserBySocketId(socket.id);
+    let user = users.getUserByPlayerToken(data.playerToken);
     if (!user) {
       callback({status: false, message: 'User not found', repeatCount: data.repeatCount + 1});
     } else {
@@ -57,7 +60,7 @@ io.on('connection', (socket) => {
 
   socket.on('addOrUpdateGameInstance', (data) => {
     console.log('addOrUpdateGameInstance', data);
-    let user = users.getUserBySocketId(socket.id);
+    let user = users.getUserByPlayerToken(data.playerToken);
     if (user.id != data.gameInstance.user_id) {
       return;
     }
@@ -66,7 +69,8 @@ io.on('connection', (socket) => {
 
   socket.on('updateGameInstance', (data) => {
     console.log('updateGameInstance', data);
-    let user = users.getUserBySocketId(socket.id);
+    let user =  users.getUserByPlayerToken(data.playerToken);
+
     if (user.id != data.gameInstance.user_id) {
       return;
     }
@@ -87,7 +91,7 @@ io.on('connection', (socket) => {
 
   socket.on('redirect', (data) => {
     console.log('redirect', data);
-    let user = users.getUserBySocketId(socket.id);
+    let user =  users.getUserByPlayerToken(data.playerToken);
     let gameInstance = games.getGameInstance(data.gameToken);
 
     if (user.id != gameInstance.game.user_id) {
@@ -100,7 +104,7 @@ io.on('connection', (socket) => {
     console.log('notifyGameMaster', data);
 
     let gameInstance = games.getGameInstance(data.gameToken);
-    let gameMasterUser= users.getUserBySocketId(gameInstance.user_id);
+    let gameMasterUser= users.getUserById(gameInstance.user_id);
 
     io.sockets.connected[gameMasterUser.socketId].emit('notifyGameMaster', { 'gameToken': data.gameToken, 'action': data.action, 'data': data.data });
     //io.to(data.gameToken).emit('notifyGameMaster', { 'gameToken': data.gameToken, 'data': data.data });
@@ -109,7 +113,7 @@ io.on('connection', (socket) => {
   socket.on('updatePlayerInstance', (data) => {
     console.log('updatePlayerInstance', data);
 
-    let user = users.getUserBySocketId(socket.id);
+    let user = users.getUserByPlayerToken(data.playerToken);
     if (user.id != data.playerInstance.user_id) {
       return;
     }

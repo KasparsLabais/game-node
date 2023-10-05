@@ -1,12 +1,12 @@
 const http = require('http');
 
 let users = {};
-const addOrUpdateUser = (userId, username, socketId) => {
+const addOrUpdateUser = (userId, username, playerToken) => {
     const user = users[userId];
     if (user) {
         user.id = userId;
         user.username = username;
-        user.socketId = socketId;
+        user.playerToken = playerToken;
     } else {
         users[userId] = { username, socketId };
     }
@@ -23,9 +23,33 @@ const getUser = (id) => {
 
 //get user by socket id
 const getUserBySocketId = (socketId) => {
+    console.log('getUserBySocketId', socketId);
     let user = null;
+    console.log('Users', users);
     Object.keys(users).forEach((key) => {
         if (users[key].socketId == socketId) {
+            user = users[key];
+        }
+    });
+    return user;
+}
+
+const getUserByPlayerToken = (playerToken) => {
+    console.log('getUserByPlayerToken', playerToken);
+    let user = null;
+    Object.keys(users).forEach((key) => {
+        if (users[key].playerToken == playerToken) {
+            user = users[key];
+        }
+    });
+    return user;
+}
+
+const getUserById = (id) => {
+    console.log('getUserById', id);
+    let user = null;
+    Object.keys(users).forEach((key) => {
+        if (users[key].id == id) {
             user = users[key];
         }
     });
@@ -55,4 +79,4 @@ const getUsersPoints = (sockedId, gameToken) => {
     });
 };
 
-module.exports = { addOrUpdateUser, removeUser, getUserBySocketId, getUser };
+module.exports = { addOrUpdateUser, removeUser, getUserBySocketId, getUser, getUserByPlayerToken, getUserById };
