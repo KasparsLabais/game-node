@@ -96,8 +96,19 @@ io.on('connection', (socket) => {
     io.to(data.gameToken).emit('redirect', { 'gameToken': data.gameToken, 'url': data.url });
   });
 
+  socket.on('notifyGameMaster', (data) => {
+    console.log('notifyGameMaster', data);
+
+    let gameInstance = games.getGameInstance(data.gameToken);
+    let gameMasterUser= users.getUserBySocketId(gameInstance.user_id);
+
+    io.sockets.connected[gameMasterUser.socketId].emit('notifyGameMaster', { 'gameToken': data.gameToken, 'action': data.action, 'data': data.data });
+    //io.to(data.gameToken).emit('notifyGameMaster', { 'gameToken': data.gameToken, 'data': data.data });
+  });
+
   socket.on('updatePlayerInstance', (data) => {
     console.log('updatePlayerInstance', data);
+
     let user = users.getUserBySocketId(socket.id);
     if (user.id != data.playerInstance.user_id) {
       return;
@@ -108,13 +119,16 @@ io.on('connection', (socket) => {
       return;
     }
 
+
     switch (data.action) {
       case 'updatePlayerInstanceStatus':
         break;
       case 'updatePlayerInstanceScore':
         break;
       case 'updatePlayerInstanceRemoteData':
-        gameInstance.players[user.id].remoteData = data.playerInstance.remoteData;
+      default:
+        gameInstance.players[user.id] = data.playerInstance;
+        //gameInstance.players[user.id].remoteData = data.playerInstance.remoteData;
         break;
     }
 
