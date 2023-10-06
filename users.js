@@ -8,7 +8,7 @@ const addOrUpdateUser = (userId, username, playerToken) => {
         user.username = username;
         user.playerToken = playerToken;
     } else {
-        users[userId] = { username, socketId };
+        users[userId] = { username, playerToken };
     }
     return users;
 }
