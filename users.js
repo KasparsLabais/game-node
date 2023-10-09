@@ -38,10 +38,12 @@ const getUserByPlayerToken = (playerToken) => {
     console.log('getUserByPlayerToken', playerToken);
     let user = null;
     Object.keys(users).forEach((key) => {
+        console.log(key, users[key]);
         if (users[key].playerToken == playerToken) {
             user = users[key];
         }
     });
+    console.log('getUserByPlayerToken', user);
     return user;
 }
 
