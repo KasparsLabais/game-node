@@ -106,7 +106,10 @@ io.on('connection', (socket) => {
     let gameInstance = games.getGameInstance(data.gameToken);
     let gameMasterUser= users.getUserById(gameInstance.user_id);
 
-    io.sockets.connected[gameMasterUser.socketId].emit('notifyGameMaster', { 'gameToken': data.gameToken, 'action': data.action, 'data': data.data });
+
+    io.to(gameMasterUser.playerToken).emit('notifyGameMaster', { 'gameToken': data.gameToken, 'action': data.action, 'data': data.data });
+
+    //io.sockets.connected[gameMasterUser.socketId].emit('notifyGameMaster', { 'gameToken': data.gameToken, 'action': data.action, 'data': data.data });
     //io.to(data.gameToken).emit('notifyGameMaster', { 'gameToken': data.gameToken, 'data': data.data });
   });
 
@@ -123,7 +126,6 @@ io.on('connection', (socket) => {
       return;
     }
 
-
     switch (data.action) {
       case 'updatePlayerInstanceStatus':
         break;
@@ -136,10 +138,12 @@ io.on('connection', (socket) => {
         break;
     }
 
-    games.addOrUpdateGame(data.gameToken, data.gameInstance);
+    games.addOrUpdateGame(data.gameToken, gameInstance);
+
+    console.log('Trigger PlayerInstanceUpdated', data.gameToken);
     io.to(data.gameToken).emit('playerInstanceUpdated', {
-      'gameToken': data.gameToken,
-      'playerInstance': data.playerInstance,
+      //'gameToken': data.gameToken,
+      //'playerInstance': data.playerInstance,
       'action' : data.action
     });
   });
