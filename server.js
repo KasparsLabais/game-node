@@ -34,14 +34,16 @@ io.on('connection', (socket) => {
     if (!user) {
       callback({ status: false, message: 'User not found', repeatCount: data.repeatCount + 1 });
     } else {
-      games.addPlayerToGameInstance(data.gameToken, user);
+
+      games.addOrUpdatePlayers(data.gameToken, user);
       let gameInstance = games.getGameInstance(data.gameToken);
 
       io.to(data.gameToken).emit('playerJoined', {
         'gameToken': data.gameToken,
-        'gameInstance': gameInstance.game,
+        'gameInstance': gameInstance,
         'player': {'username': user.username, 'id': user.id}
       });
+
       callback({ status: true, message: 'Joined room' });
     }
   });
@@ -104,13 +106,19 @@ io.on('connection', (socket) => {
     console.log('notifyGameMaster', data);
 
     let gameInstance = games.getGameInstance(data.gameToken);
+    console.log('notifyGameMaster', gameInstance, gameInstance.user_id);
     let gameMasterUser= users.getUserById(gameInstance.user_id);
-
 
     io.to(gameMasterUser.playerToken).emit('notifyGameMaster', { 'gameToken': data.gameToken, 'action': data.action, 'data': data.data });
 
     //io.sockets.connected[gameMasterUser.socketId].emit('notifyGameMaster', { 'gameToken': data.gameToken, 'action': data.action, 'data': data.data });
     //io.to(data.gameToken).emit('notifyGameMaster', { 'gameToken': data.gameToken, 'data': data.data });
+  });
+
+  socket.on('notifyRoom', (data) => {
+    console.log('notifyRoom', data);
+    let playerInstance = users.getUserByPlayerToken(data.playerToken);
+    io.to(data.gameToken).emit('notifyRoom', { 'gameToken': data.gameToken, 'data': data.data, 'username' : playerInstance.username });
   });
 
   socket.on('updatePlayerInstance', (data) => {
@@ -133,19 +141,18 @@ io.on('connection', (socket) => {
         break;
       case 'updatePlayerInstanceRemoteData':
       default:
-        gameInstance.players[user.id] = data.playerInstance;
+        //gameInstance.players[user.id] = data.playerInstance;
         //gameInstance.players[user.id].remoteData = data.playerInstance.remoteData;
         break;
     }
 
-    games.addOrUpdateGame(data.gameToken, gameInstance);
-
-    console.log('Trigger PlayerInstanceUpdated', data.gameToken);
+    games.addOrUpdatePlayers(data.gameToken, data.playerInstance);
     io.to(data.gameToken).emit('playerInstanceUpdated', {
       //'gameToken': data.gameToken,
       //'playerInstance': data.playerInstance,
       'action' : data.action
     });
+    socket.emit('updatePoints', {'points': data.playerInstance.points});
   });
 
 });
