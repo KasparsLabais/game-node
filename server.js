@@ -18,7 +18,7 @@ io.on('connection', (socket) => {
 
   socket.on('userconnected', (data) => {
     console.log('user connected ', data);
-    let userResponse = users.addOrUpdateUser(data.id, data.username, data.playerToken);
+    let userResponse = users.addOrUpdateUser(data.id, data.username, data.avatar, data.playerToken);
     socket.join(data.playerToken);
   });
 
@@ -41,7 +41,7 @@ io.on('connection', (socket) => {
       io.to(data.gameToken).emit('playerJoined', {
         'gameToken': data.gameToken,
         'gameInstance': gameInstance,
-        'player': {'username': user.username, 'id': user.id}
+        'player': {'username': user.username, 'id': user.id, 'avatar': user.avatar}
       });
 
       callback({ status: true, message: 'Joined room' });
