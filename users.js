@@ -9,7 +9,7 @@ const addOrUpdateUser = (userId, username, avatar, playerToken) => {
         user.playerToken = playerToken;
         user.avatar = avatar;
     } else {
-        users[userId] = { username, playerToken };
+        users[userId] = { id: userId, username, playerToken, avatar };
     }
     return users;
 }
@@ -51,6 +51,7 @@ const getUserByPlayerToken = (playerToken) => {
 const getUserById = (id) => {
     console.log('getUserById', id);
     let user = null;
+    console.log('Users', users);
     Object.keys(users).forEach((key) => {
         if (users[key].id == id) {
             user = users[key];

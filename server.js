@@ -11,6 +11,59 @@ const server = http.createServer((req, res) => {
 
 server.listen(3000,'localhost', () => {
   console.log('Server running at http://node-server.test:3000/');
+
+  //load games from api
+  console.log('Loading games from api')
+  http.get('http://trivia.test/api/games', (resp) => {
+    console.log('Response');
+
+    //parse incomming message
+    let data = [];
+    const { statusCode } = resp;
+    const contentType = resp.headers['content-type'];
+    console.log('Status code', statusCode);
+    console.log('Content type', contentType);
+
+    resp.on('data', (chunk) => {
+        data.push(chunk);
+    });
+
+    resp.on('end', () => {
+        let fullResponse = JSON.parse(Buffer.concat(data).toString());
+        console.log(fullResponse);
+
+        fullResponse.games.forEach((game) => {
+          console.log( game.players);
+          games.addOrUpdateGame(game.game.token, game.game);
+          game.players.forEach((player) => {
+            console.log(player);
+              //if avatar is null set default avatar
+              if (player.user.avatar == null) {
+                player.user.avatar = '/images/default-avatar.jpg';
+              }
+
+              let parsedPlayer = {
+                'id': player.id,
+                'username': player.user.username,
+                'avatar':  player.user.avatar,
+                'playerToken': player.user.unique_token,
+                'points': player.points,
+                'remote_data': player.remote_data
+              }
+
+              games.addOrUpdatePlayers(game.game.token, parsedPlayer);
+          });
+
+          //games.addOrUpdatePlayers(game.gameToken, game.players);
+        });
+
+    });
+
+  }).on("error", (err) => {
+    console.log("Error: " + err.message);
+  });
+  console.log('Loading games from api done');
+
 });
 
 const io = require('./socket').init(server);
@@ -108,7 +161,7 @@ io.on('connection', (socket) => {
     let gameInstance = games.getGameInstance(data.gameToken);
     console.log('notifyGameMaster', gameInstance, gameInstance.user_id);
     let gameMasterUser= users.getUserById(gameInstance.user_id);
-
+    console.log('notifyGameMaster', gameMasterUser);
     io.to(gameMasterUser.playerToken).emit('notifyGameMaster', { 'gameToken': data.gameToken, 'action': data.action, 'data': data.data });
 
     //io.sockets.connected[gameMasterUser.socketId].emit('notifyGameMaster', { 'gameToken': data.gameToken, 'action': data.action, 'data': data.data });
