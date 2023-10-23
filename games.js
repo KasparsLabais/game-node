@@ -33,9 +33,14 @@ const getGameInstance = (gameToken) => {
     return gameInstances[gameToken].game;
 }
 
+const getAllGameInstances = () => {
+    console.log("getAllGameInstances", gameInstances)
+    return gameInstances;
+}
+
 const getPlayersInstance = (gameToken) => {
     console.log("getPlayerInstance", gameInstances[gameToken])
     return gameInstances[gameToken].players;
 }
 
-module.exports = { addOrUpdateGame, addOrUpdatePlayers, getGameInstance, getPlayersInstance };
+module.exports = { addOrUpdateGame, addOrUpdatePlayers, getGameInstance, getPlayersInstance, getAllGameInstances };

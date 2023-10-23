@@ -208,5 +208,11 @@ io.on('connection', (socket) => {
     socket.emit('updatePoints', {'points': data.playerInstance.points});
   });
 
+  socket.on('getGameInstances', (data, callback ) => {
+    console.log('getGameInstances', data);
+    let gameInstances = games.getAllGameInstances();
+    callback(gameInstances);
+  });
+
 });
 
