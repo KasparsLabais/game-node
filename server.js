@@ -9,12 +9,12 @@ const server = http.createServer((req, res) => {
   //res.end('Hello, World!\n');
 });
 
-server.listen(3000,'localhost', () => {
-  console.log('Server running at http://node-server.test:3000/');
+server.listen(5000,'localhost', () => {
+  console.log('Server running at http://node-server.test:5000/');
 
   //load games from api
   console.log('Loading games from api')
-  http.get('http://trivia.test/api/games', (resp) => {
+  http.get('http://is-a.gay/api/games', (resp) => {
     console.log('Response');
 
     //parse incomming message
