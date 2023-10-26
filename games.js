@@ -28,6 +28,36 @@ const addOrUpdatePlayers = (gameToken, player) => {
     return gameInstances;
 }
 
+const addOrUpdateGameInstanceSettings = (gameToken, gameInstanceSettings) => {
+    console.log("addOrUpdateGameInstanceSettings", gameToken, gameInstanceSettings);
+    let gameInstance = gameInstances[gameToken];
+    if (gameInstance) {
+        if (!gameInstance.gameInstanceSettings) {
+            gameInstances[gameToken]['gameInstanceSettings'] = gameInstanceSettings;
+        } else {
+            gameInstances[gameToken]['gameInstanceSettings'] = gameInstanceSettings;
+        }
+    } else {
+        gameInstances[gameToken] = { gameInstanceSettings: gameInstanceSettings };
+    }
+    return gameInstances;
+}
+
+const addOrUpdateGameInstanceSetting = (gameToken, key, value) => {
+    console.log("addOrUpdateGameInstanceSetting", gameToken, key, value);
+    let gameInstance = gameInstances[gameToken];
+    if (gameInstance) {
+        if (!gameInstance.gameInstanceSettings) {
+            gameInstances[gameToken]['gameInstanceSettings'] = { [key]: value };
+        } else {
+            gameInstances[gameToken]['gameInstanceSettings'][key] = value;
+        }
+    } else {
+        gameInstances[gameToken] = { gameInstanceSettings: { [key]: value } };
+    }
+    return gameInstances;
+}
+
 const getGameInstance = (gameToken) => {
     console.log("getGameInstance", gameInstances[gameToken])
     return gameInstances[gameToken].game;
@@ -43,4 +73,4 @@ const getPlayersInstance = (gameToken) => {
     return gameInstances[gameToken].players;
 }
 
-module.exports = { addOrUpdateGame, addOrUpdatePlayers, getGameInstance, getPlayersInstance, getAllGameInstances };
+module.exports = { addOrUpdateGame, addOrUpdatePlayers, getGameInstance, getPlayersInstance, getAllGameInstances, addOrUpdateGameInstanceSettings, addOrUpdateGameInstanceSetting };

@@ -214,5 +214,37 @@ io.on('connection', (socket) => {
     callback(gameInstances);
   });
 
+
+  socket.on('updateGameInstanceSetting', (data) => {
+    console.log('updateGameInstanceSetting', data);
+    let user = users.getUserByPlayerToken(data.playerToken);
+    let game = games.getGameInstance(data.gameToken);
+
+    if (user.id != game.user_id) {
+      return;
+    }
+    games.addOrUpdateGameInstanceSetting(data.gameToken, data.key, data.value);
+    io.to(data.gameToken).emit('gameInstanceSettingUpdated', {
+      'gameToken': data.gameToken,
+      'key': data.key,
+      'value': data.value
+    });
+  });
+
+  socket.on('updateGameInstanceSettings', (data) => {
+    console.log('updateGameInstanceSettings', data);
+    let user = users.getUserByPlayerToken(data.playerToken);
+    let game = games.getGameInstance(data.gameToken);
+
+    if (user.id != game.user_id) {
+      return;
+    }
+    games.addOrUpdateGameInstanceSettings(data.gameToken, data.gameInstanceSettings);
+    io.to(data.gameToken).emit('gameInstanceSettingsUpdated', {
+      'gameToken': data.gameToken,
+      'gameInstanceSettings': data.gameInstanceSettings
+    });
+  })
+
 });
 
