@@ -246,5 +246,36 @@ io.on('connection', (socket) => {
     });
   })
 
+
+  socket.on('triggerAlertNotification', (data) => {
+    console.log('triggerAlertNotification', data);
+    let user = users.getUserByPlayerToken(data.playerToken);
+    let game = games.getGameInstance(data.gameToken);
+
+    if (user.id != game.user_id) {
+      return;
+    }
+
+    if (data.messageType == 'group') {
+      io.to(data.gameToken).emit('alertNotification', {
+        'gameToken': data.gameToken,
+        'message': data.message,
+        'notificationType' : data.notificationType
+      });
+      return;
+    }
+
+    let recepient = users.getUserById(data.playerId);
+    if (data.messageType == 'player') {
+      io.to(recepient.playerToken).emit('alertNotification', {
+        'gameToken': data.gameToken,
+        'message': data.message,
+        'notificationType' : data.notificationType
+      });
+    }
+
+    return;
+  });
+
 });
 
