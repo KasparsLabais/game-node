@@ -73,6 +73,9 @@ io.on('connection', (socket) => {
     console.log('user connected ', data);
     let userResponse = users.addOrUpdateUser(data.id, data.username, data.avatar, data.playerToken);
     socket.join(data.playerToken);
+
+    console.log('Attempt to connect');
+    socket.emit('userconnected', { 'username': data.username, 'id': data.id, 'avatar': data.avatar, 'playerToken': data.playerToken });
   });
 
   socket.on('disconnect', (socket) => {
