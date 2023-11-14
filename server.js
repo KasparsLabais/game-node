@@ -209,7 +209,16 @@ io.on('connection', (socket) => {
       //'playerInstance': data.playerInstance,
       'action' : data.action
     });
-    socket.emit('updatePoints', {'points': data.playerInstance.points});
+  });
+
+  socket.on('getPlayerPoints', (data) => {
+    console.log('getPlayersPoints', data);
+    let user = users.getUserByPlayerToken(data.playerToken);
+    console.log('getPlayersPoints', user);
+    let playerInstance = games.getPlayerInstance(data.gameToken, user.id);
+    console.log('getPlayersPoints', playerInstance);
+
+    socket.emit('updatePoints', {'points': playerInstance.points});
   });
 
   socket.on('getGameInstances', (data, callback ) => {

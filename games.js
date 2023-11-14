@@ -73,4 +73,29 @@ const getPlayersInstance = (gameToken) => {
     return gameInstances[gameToken].players;
 }
 
-module.exports = { addOrUpdateGame, addOrUpdatePlayers, getGameInstance, getPlayersInstance, getAllGameInstances, addOrUpdateGameInstanceSettings, addOrUpdateGameInstanceSetting };
+//get player_instance from game_instance
+const getPlayerInstance = (gameToken, playerId) => {
+    console.log("getPlayerInstance", gameInstances[gameToken])
+    console.log("getPlayerInstance", gameInstances[gameToken].players)
+    //return player instance from array player_instances by key user_id == playerId
+    return findUserById(gameInstances[gameToken].players, playerId);
+}
+
+
+function findUserById(data, userId) {
+    for (let key in data) {
+        if (data.hasOwnProperty(key)) {
+            const item = data[key];
+            // Check if item is an object and has a user_id property
+            if (typeof item === 'object' && item !== null && 'user_id' in item) {
+                if (item.user_id === userId) {
+                    return item;
+                }
+            }
+        }
+    }
+    return null; // Return null if no user found
+}
+
+
+module.exports = { addOrUpdateGame, addOrUpdatePlayers, getGameInstance, getPlayersInstance, getAllGameInstances, addOrUpdateGameInstanceSettings, addOrUpdateGameInstanceSetting, getPlayerInstance};
