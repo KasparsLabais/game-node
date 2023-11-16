@@ -71,11 +71,20 @@ io.on('connection', (socket) => {
 
   socket.on('userconnected', (data) => {
     console.log('user connected ', data);
-    let userResponse = users.addOrUpdateUser(data.id, data.username, data.avatar, data.playerToken);
+    let userResponse = users.addOrUpdateUser(data.id, data.username, data.avatar, data.playerToken, data.playerType);
     socket.join(data.playerToken);
 
     console.log('Attempt to connect');
     socket.emit('userconnected', { 'username': data.username, 'id': data.id, 'avatar': data.avatar, 'playerToken': data.playerToken });
+  });
+
+  socket.on('userReConnected', (data, callback) => {
+    console.log('userReConnected', data);
+
+    let userResponse = users.addOrUpdateUser(data.id, data.username, data.avatar, data.playerToken, data.playerType);
+    socket.join(data.playerToken);
+
+    callback({'status': 'connected'});
   });
 
   socket.on('disconnect', (socket) => {

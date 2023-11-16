@@ -1,15 +1,16 @@
 const http = require('http');
 
 let users = {};
-const addOrUpdateUser = (userId, username, avatar, playerToken) => {
+const addOrUpdateUser = (userId, username, avatar, playerToken, playerType = 'guest') => {
     const user = users[userId];
     if (user) {
         user.id = userId;
         user.username = username;
         user.playerToken = playerToken;
         user.avatar = avatar;
+        user.playerType = playerType;
     } else {
-        users[userId] = { id: userId, username, playerToken, avatar };
+        users[userId] = { id: userId, username, playerToken, avatar, playerType };
     }
     return users;
 }
