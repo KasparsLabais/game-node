@@ -1,7 +1,7 @@
 const http = require('http');
 
 let users = {};
-const addOrUpdateUser = (userId, username, avatar, playerToken, playerType = 'guest') => {
+const addOrUpdateUser = (userId, username, avatar, playerToken, playerType = 'guest', iconFlair = '') => {
     const user = users[userId];
     if (user) {
         user.id = userId;
@@ -9,8 +9,9 @@ const addOrUpdateUser = (userId, username, avatar, playerToken, playerType = 'gu
         user.playerToken = playerToken;
         user.avatar = avatar;
         user.playerType = playerType;
+        user.iconFlair = iconFlair;
     } else {
-        users[userId] = { id: userId, username, playerToken, avatar, playerType };
+        users[userId] = { id: userId, username, playerToken, avatar, playerType, iconFlair };
     }
     return users;
 }

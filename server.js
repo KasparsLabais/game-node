@@ -71,7 +71,7 @@ io.on('connection', (socket) => {
 
   socket.on('userconnected', (data) => {
     console.log('user connected ', data);
-    let userResponse = users.addOrUpdateUser(data.id, data.username, data.avatar, data.playerToken, data.playerType);
+    let userResponse = users.addOrUpdateUser(data.id, data.username, data.avatar, data.playerToken, data.playerType, data.iconFlair);
     socket.join(data.playerToken);
 
     console.log('Attempt to connect');
@@ -81,7 +81,7 @@ io.on('connection', (socket) => {
   socket.on('userReConnected', (data, callback) => {
     console.log('userReConnected', data);
 
-    let userResponse = users.addOrUpdateUser(data.id, data.username, data.avatar, data.playerToken, data.playerType);
+    let userResponse = users.addOrUpdateUser(data.id, data.username, data.avatar, data.playerToken, data.playerType, data.iconFlair);
     socket.join(data.playerToken);
 
     callback({'status': 'connected'});
