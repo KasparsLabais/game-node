@@ -33,7 +33,7 @@ server.listen(5000,'localhost', () => {
         console.log(fullResponse);
 
         fullResponse.games.forEach((game) => {
-          console.log( game.players);
+          console.log('End Action', game.players);
           games.addOrUpdateGame(game.game.token, game.game);
           game.players.forEach((player) => {
             console.log(player);
